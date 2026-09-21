@@ -1,0 +1,5 @@
+import jwt from "jsonwebtoken";import bcrypt from "bcryptjs";import {prisma} from "./db.js";
+const secret=process.env.JWT_SECRET;if(!secret)throw Error("JWT_SECRET is required");
+export const hashPassword=p=>bcrypt.hash(p,12);export const verifyPassword=(p,h)=>bcrypt.compare(p,h);export const signToken=u=>jwt.sign({sub:u.id,role:u.role},secret,{expiresIn:"7d",issuer:"marg-api"});
+export async function requireAuth(req,res,next){try{const h=req.headers.authorization||"",t=h.startsWith("Bearer ")?h.slice(7):null;if(!t)return res.status(401).json({error:"Authentication required"});const p=jwt.verify(t,secret,{issuer:"marg-api"});const u=await prisma.user.findUnique({where:{id:p.sub},select:{id:true,email:true,name:true,phone:true,role:true}});if(!u)return res.status(401).json({error:"Invalid account"});req.user=u;next()}catch{return res.status(401).json({error:"Invalid or expired token"})}}
+export const requireRole=(...roles)=>(req,res,next)=>roles.includes(req.user?.role)?next():res.status(403).json({error:"Correct account role required"});

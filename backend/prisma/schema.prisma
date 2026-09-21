@@ -1,0 +1,38 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+enum UserRole { TRAVELER VENDOR ADMIN }
+enum BookingStatus { PENDING CONFIRMED CANCELLED COMPLETED }
+enum BookingType { HOTEL TRANSPORT EXPERIENCE }
+enum SosStatus { ACTIVE ACKNOWLEDGED RESOLVED CANCELLED }
+enum OtpPurpose { REGISTER LOGIN }
+enum OtpChannel { EMAIL SMS }
+enum ServiceCategory { HOTEL ARTISAN FOOD TRANSPORT EXPERIENCE GUIDE }
+model User { id String @id @default(cuid()) email String @unique passwordHash String name String phone String? role UserRole @default(TRAVELER)
+ providerApproved Boolean @default(false) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt bookings Booking[] sosAlerts SosAlert[] emergencyContacts EmergencyContact[] services Service[] @relation("ProviderServices") }
+model EmergencyContact { id String @id @default(cuid()) userId String name String phone String relation String? user User @relation(fields:[userId],references:[id],onDelete:Cascade) createdAt DateTime @default(now()) @@index([userId]) }
+model Booking { id String @id @default(cuid()) userId String serviceId String? type BookingType providerName String destination String startAt DateTime endAt DateTime? guests Int @default(1) amountMinor Int currency String @default("INR") status BookingStatus @default(PENDING) metadata Json? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt user User @relation(fields:[userId],references:[id],onDelete:Cascade) service Service? @relation(fields:[serviceId],references:[id],onDelete:SetNull) @@index([userId,startAt]) @@index([status]) }
+model Service { id String @id @default(cuid()) providerId String name String category ServiceCategory destination String description String? priceMinor Int currency String @default("INR") capacity Int @default(1) contactPhone String? published Boolean @default(false) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt provider User @relation("ProviderServices",fields:[providerId],references:[id],onDelete:Cascade) bookings Booking[] @@index([providerId]) @@index([published,category,destination]) }
+model SosAlert { id String @id @default(cuid()) userId String latitude Float? longitude Float? message String? status SosStatus @default(ACTIVE) triggeredAt DateTime @default(now()) acknowledgedAt DateTime? resolvedAt DateTime? user User @relation(fields:[userId],references:[id],onDelete:Cascade) @@index([userId,status]) @@index([status,triggeredAt]) }
+model OtpChallenge {
+ id String @id @default(cuid())
+ email String
+ phone String?
+ passwordHash String?
+ name String?
+ role UserRole
+ purpose OtpPurpose
+ codeHashEmail String?
+ codeHashSms String?
+ emailVerifiedAt DateTime?
+ smsVerifiedAt DateTime?
+ emailExpiresAt DateTime?
+ smsExpiresAt DateTime?
+ emailLastSentAt DateTime?
+ smsLastSentAt DateTime?
+ attempts Int @default(0)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([email])
+ @@index([purpose])
+ @@index([createdAt])
+}

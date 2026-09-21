@@ -1,0 +1,1 @@
+ALTER TABLE "User" ADD COLUMN "providerApproved" BOOLEAN NOT NULL DEFAULT false;

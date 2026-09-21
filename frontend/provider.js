@@ -1,0 +1,12 @@
+const API=localStorage.getItem("marg_api")||window.MARG_API_URL||"http://localhost:4000", token=()=>localStorage.getItem("marg_provider_token");
+async function get(path){const r=await fetch(API+path,{headers:{Authorization:"Bearer "+token()}});const d=await r.json();if(!r.ok)throw Error(d.error||"Request failed");return d}
+async function send(path,body,method="POST"){const r=await fetch(API+path,{method,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token()},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw Error(d.error||"Request failed");return d}
+if(location.pathname.endsWith("provider-dashboard.html")){
+ if(!token())location.href="provider-login.html";
+ init();
+}
+async function init(){try{const me=await get("/api/me");if(me.user.role!=="VENDOR")throw Error("Provider account required");who.textContent=me.user.name;await loadMine()}catch(e){alert(e.message);location.href="provider-login.html"}}
+serviceForm.onsubmit=async e=>{e.preventDefault();try{await send("/api/services",{name:serviceName.value,category:category.value,destination:serviceDestination.value,priceMinor:Number(price.value)*100,currency:"INR",capacity:Number(capacity.value),description:description.value,contactPhone:servicePhone.value,published:published.checked});formMsg.textContent="Service published successfully. Travellers can now see it if published.";e.target.reset();published.checked=true;loadMine()}catch(x){formMsg.textContent=x.message}}
+async function loadMine(){try{const d=await get("/api/provider/services");myServices.innerHTML=(d.services||[]).map(s=>`<article class="service"><div class="service-cover">${({HOTEL:"🏨",ARTISAN:"🎨",FOOD:"🍲",TRANSPORT:"🚐",EXPERIENCE:"🌿",GUIDE:"🧭"})[s.category]||"✨"}</div><div class="service-body"><span class="badge provider-badge">${s.category}</span><h3>${esc(s.name)}</h3><p>${esc(s.description||"")}<br>${esc(s.destination)}<br>${esc(s.contactPhone||"")}</p><div class="price">${money(s.priceMinor,s.currency)}</div><p>Status: <b>${s.published?"Published to travellers":"Draft"}</b></p></div></article>`).join("")||"<p>No services listed yet.</p>"}catch(e){myServices.innerHTML="<p>Could not load services.</p>"}}
+logout.onclick=()=>{localStorage.removeItem("marg_provider_token");location.href="index.html"};
+function money(m,c="INR"){return new Intl.NumberFormat("en-IN",{style:"currency",currency:c,maximumFractionDigits:0}).format((m||0)/100)}function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}

@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: marg-api
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm install && npx prisma generate
+    preDeployCommand: npx prisma migrate deploy
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: marg-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: OTP_FROM_EMAIL
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM_NUMBER
+        sync: false
+databases:
+  - name: marg-db
+    databaseName: marg
+    user: marg
+    plan: free
+    region: singapore
+    postgresMajorVersion: "17"
+    diskSizeGB: 1

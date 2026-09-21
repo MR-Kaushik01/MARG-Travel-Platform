@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MARG Service Provider Registration</title><link rel="stylesheet" href="styles.css"></head><body class="auth-page provider-bg"><div class="auth-card wide"><a class="brand" href="index.html"><span class="logo">M</span>MARG</a><div class="eyebrow">SERVICE PROVIDER PORTAL</div><h1>Bring your local service to MARG.</h1><p>Register your business or local service. After verification/approval, your service provider dashboard lets you publish listings.</p><form id="providerRegister"><div class="two"><label>Service Provider / business name<input id="name" required></label><label>Phone<input id="phone" required></label></div><label>Email<input id="email" type="email" required></label><label>Password<input id="password" type="password" minlength="8" required></label><div class="provider-types"><span>🏨 Hotel</span><span>🎨 Artisan</span><span>🍲 Food</span><span>🚐 Transport</span><span>🌿 Experience</span><span>🧭 Guide</span></div><button class="btn provider-btn full">Create Service Provider Account</button></form><div id="msg"></div><p>Already registered? <a href="provider-login.html">Service Provider login</a></p><section id="otpStep" class="otp-step" hidden>
+<h2>Verify with OTP</h2>
+<p id="otpEmailText">We sent verification codes to your email and phone.</p>
+<form id="otpForm">
+<input id="otpChallenge" type="hidden">
+<label>Email OTP<input id="emailOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit email code" required></label>
+<div id="smsOtpWrap"><label>SMS OTP<input id="smsOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit SMS code" required></label></div>
+<button class="btn primary full">Verify OTP & Continue</button>
+</form>
+<button id="resendOtp" class="btn outline full otp-back" type="button">Resend OTP</button>
+<button id="backToCredentials" class="btn outline full otp-back" type="button">Back</button>
+<div id="otpMsg" class="msg"></div>
+</section></div><script src="config.js"></script>
+    <script src="auth.js"></script></body></html>
