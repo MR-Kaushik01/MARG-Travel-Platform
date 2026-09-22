@@ -15,7 +15,7 @@ const tl=document.querySelector("#travellerLogin");
 if(tl)tl.onsubmit=async e=>{e.preventDefault();try{const d=await send("/api/auth/login/start",{email:document.querySelector("#email").value,password:document.querySelector("#password").value,role:"TRAVELER"});showOtp(d,"TRAVELER_LOGIN");setMsg("");setOtpMsg("Enter both codes to finish login.")}catch(x){setMsg(x.message)}};
 
 const tr=document.querySelector("#travellerRegister");
-if(tr)tr.onsubmit=async e=>{e.preventDefault();try{const d=await send("/api/auth/register/start",{name:document.querySelector("#name").value,email:document.querySelector("#email").value,password:document.querySelector("#password").value,phone:document.querySelector("#phone").value});showOtp(d,"TRAVELER_REGISTER");setMsg("");setOtpMsg("Enter both codes to verify your Traveller account.")}catch(x){setMsg(x.message)}};
+if(tr)tr.onsubmit=async e=>{e.preventDefault();try{const d=await send("/api/auth/register/start",{name:document.querySelector("#name").value,email:document.querySelector("#email").value,password:document.querySelector("#password").value});showOtp(d,"TRAVELER_REGISTER");setMsg("");setOtpMsg("Enter both codes to verify your Traveller account.")}catch(x){setMsg(x.message)}};
 
 const pl=document.querySelector("#providerLogin");
 if(pl)pl.onsubmit=async e=>{e.preventDefault();try{const d=await send("/api/auth/login/start",{email:document.querySelector("#email").value,password:document.querySelector("#password").value,role:"VENDOR"});showOtp(d,"PROVIDER_LOGIN");setMsg("");setOtpMsg("Enter both codes to finish Service Provider login.")}catch(x){setMsg(x.message)}};
