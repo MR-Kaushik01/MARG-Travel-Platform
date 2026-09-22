@@ -27,7 +27,13 @@ async function sendEmailOtp(to, otp) {
       html: `<p>Your MARG verification code is <strong>${otp}</strong>.</p><p>This code expires in 5 minutes. Do not share it with anyone.</p>`
     })
   });
-  if (!response.ok) throw new Error(`Email OTP could not be sent (${response.status}).`);
+ if (!response.ok) {
+  const errorBody = await response.text();
+
+  throw new Error(
+    `Email OTP could not be sent (${response.status}): ${errorBody}`
+  );
+}
 }
 
 async function sendSmsOtp(to, otp) {
