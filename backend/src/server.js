@@ -1,7 +1,7 @@
 import "dotenv/config";import express from "express";import cors from "cors";import helmet from "helmet";import {z} from "zod";import {prisma} from "./db.js";import {hashPassword,verifyPassword,signToken,requireAuth,requireRole} from "./auth.js";
 import {createChallenge,verifyChallenge,resendChallenge,otpConfig} from "./otp.js";
 const app=express();app.use(helmet());app.use(cors({origin:process.env.CORS_ORIGIN?.split(",").map(x=>x.trim())||true}));app.use(express.json({limit:"100kb"}));
-const account=z.object({email:z.string().email(),password:z.string().min(8),name:z.string().min(2).max(100),phone:z.string().min(7).max(30)});
+const account=z.object({email:z.string().email(),password:z.string().min(8),name:z.string().min(2).max(100),phone:z.string().min(7).max(30).optional()});
 const service=z.object({name:z.string().min(2).max(150),category:z.enum(["HOTEL","ARTISAN","FOOD","TRANSPORT","EXPERIENCE","GUIDE"]),destination:z.string().min(2).max(150),description:z.string().max(2000).optional(),priceMinor:z.number().int().min(0),currency:z.string().length(3).default("INR"),capacity:z.number().int().min(1).max(10000).default(1),contactPhone:z.string().max(30).optional(),published:z.boolean().default(false)});
 const booking=z.object({serviceId:z.string(),startAt:z.coerce.date(),endAt:z.coerce.date().optional(),guests:z.number().int().min(1).max(100).default(1)});
 const companion=z.object({name:z.string().min(2).max(100),relation:z.string().max(50).optional(),phone:z.string().min(7).max(30)});
