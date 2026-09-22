@@ -21,7 +21,7 @@ const pl=document.querySelector("#providerLogin");
 if(pl)pl.onsubmit=async e=>{e.preventDefault();try{const d=await send("/api/auth/login/start",{email:document.querySelector("#email").value,password:document.querySelector("#password").value,role:"VENDOR"});showOtp(d,"PROVIDER_LOGIN");setMsg("");setOtpMsg("Enter both codes to finish Service Provider login.")}catch(x){setMsg(x.message)}};
 
 const pr=document.querySelector("#providerRegister");
-if(pr)pr.onsubmit=async e=>{e.preventDefault();try{const d=await send("/api/auth/provider-register/start",{name:document.querySelector("#name").value,email:document.querySelector("#email").value,password:document.querySelector("#password").value,phone:document.querySelector("#phone").value});showOtp(d,"PROVIDER_REGISTER");setMsg("");setOtpMsg("Enter both codes to verify your Service Provider account.")}catch(x){setMsg(x.message)}};
+if(pr)pr.onsubmit=async e=>{e.preventDefault();try{const d=await send("/api/auth/provider-register/start",{name:document.querySelector("#name").value,email:document.querySelector("#email").value,password:document.querySelector("#password").value});showOtp(d,"PROVIDER_REGISTER");setMsg("");setOtpMsg("Enter both codes to verify your Service Provider account.")}catch(x){setMsg(x.message)}};
 
 const otpForm=document.querySelector("#otpForm");
 if(otpForm)otpForm.onsubmit=async e=>{e.preventDefault();try{
