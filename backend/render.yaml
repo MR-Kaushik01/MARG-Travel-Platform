@@ -4,9 +4,9 @@ services:
     runtime: node
     plan: starter
     region: singapore
-    buildCommand: npm install && npx prisma generate
-    preDeployCommand: npx prisma migrate deploy
-    startCommand: npm start
+   buildCommand: npm install && npx prisma generate
+   preDeployCommand: npx prisma db push
+   startCommand: npm start
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
