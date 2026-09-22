@@ -115,5 +115,18 @@ app.post("/api/admin/sos/:id/resolve",requireAuth,requireRole("ADMIN"),async(req
  res.json({alert})
 }catch(e){next(e)}});
 
-app.use((e,_q,r,_n)=>{if(e?.name==="ZodError")return r.status(400).json({error:"Invalid request",details:e.issues});console.error(e);r.status(500).json({error:"Internal server error"})});
+app.use((e, _q, r, _n) => {
+    console.error("SERVER ERROR:", e);
+
+    if (e?.name === "ZodError") {
+        return r.status(400).json({
+            error: "Invalid request",
+            details: e.issues
+        });
+    }
+
+    return r.status(500).json({
+        error: e?.message || "Internal server error"
+    });
+});
 app.listen(Number(process.env.PORT||4000),()=>console.log("MARG API running"));
