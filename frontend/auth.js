@@ -25,7 +25,16 @@ if(pr)pr.onsubmit=async e=>{e.preventDefault();try{const d=await send("/api/auth
 
 const otpForm=document.querySelector("#otpForm");
 if(otpForm)otpForm.onsubmit=async e=>{e.preventDefault();try{
- const mode=e.target.dataset.mode; const body={challengeId:document.querySelector("#otpChallenge").value,emailOtp:document.querySelector("#emailOtp").value,smsOtp:document.querySelector("#smsOtp").value};
+ const mode=e.target.dataset.mode;const body = {
+  challengeId: document.querySelector("#otpChallenge").value,
+  emailOtp: document.querySelector("#emailOtp").value
+};
+
+const smsInput = document.querySelector("#smsOtp");
+
+if (smsInput && smsInput.value.trim()) {
+  body.smsOtp = smsInput.value.trim();
+}
  let d;
  if(mode.includes("REGISTER")) d=await send("/api/auth/register/verify",body); else d=await send("/api/auth/login/verify",body);
  if(d.user.role==="TRAVELER"){localStorage.setItem("marg_token",d.token);location.href="traveller-dashboard.html"}
