@@ -25,7 +25,14 @@ app.post("/api/auth/register/verify",async(req,res,next)=>{try{
  const c=await verifyChallenge(prisma,x.challengeId,x.emailOtp,x.smsOtp);
  if(!c.verified)return res.status(400).json({error:"Both OTPs are required."});
  if(await prisma.user.findUnique({where:{email:c.email}}))return res.status(409).json({error:"Email already registered"});
- const u=await prisma.user.create({data:{email:c.email,passwordHash:c.passwordHash,name:c.name,phone:c.phone,role:c.role}});
+const u = await prisma.user.create({
+  data: {
+    email: c.email,
+    passwordHash: c.passwordHash,
+    name: c.name,
+    role: c.role
+  }
+});
  await prisma.otpChallenge.delete({where:{id:c.id}});
  res.status(201).json({user:{id:u.id,email:u.email,name:u.name,phone:u.phone,role:u.role},token:signToken(u)});
 }catch(e){next(e)}});
@@ -40,8 +47,16 @@ app.post("/api/auth/login/start",async(req,res,next)=>{try{
 app.post("/api/auth/otp/resend",async(req,res,next)=>{try{const x=z.object({challengeId:z.string()}).parse(req.body);res.json(await resendChallenge(prisma,x.challengeId))}catch(e){next(e)}});
 app.post("/api/auth/login/verify",async(req,res,next)=>{try{
  const x=z.object({challengeId:z.string(),emailOtp:z.string().length(6),smsOtp:z.string().length(6).optional()}).parse(req.body);
- const c=await verifyChallenge(prisma,x.challengeId,x.emailOtp,x.smsOtp);
- if(!c.verified)return res.status(400).json({error:"Both OTPs are required."});
+const c = await verifyChallenge(
+  prisma,
+  x.challengeId,
+  x.emailOtp,
+  null
+);
+
+if (!c.verified) {
+  return res.status(400).json({ error: "Email OTP is required." });
+}
  const u=await prisma.user.findUnique({where:{email:c.email}});
  if(!u||u.role!==c.role)return res.status(401).json({error:"Invalid account"});
  await prisma.otpChallenge.delete({where:{id:c.id}});
