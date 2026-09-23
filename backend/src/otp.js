@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import nodemailer from "nodemailer";
 
 const OTP_TTL_MS = 5 * 60 * 1000;
 const RESEND_COOLDOWN_MS = 45 * 1000;
@@ -15,25 +16,33 @@ export function otpConfig() {
   return { emailEnabled: emailEnabled(), smsEnabled: smsEnabled() };
 }
 
-async function sendEmailOtp(to, otp) {
-  if (!emailEnabled()) throw new Error("Email OTP is not configured. Add RESEND_API_KEY and OTP_FROM_EMAIL in the backend environment.");
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from: process.env.OTP_FROM_EMAIL,
-      to: [to],
-      subject: "Your MARG verification code",
-      html: `<p>Your MARG verification code is <strong>${otp}</strong>.</p><p>This code expires in 5 minutes. Do not share it with anyone.</p>`
-    })
-  });
- if (!response.ok) {
-  const errorBody = await response.text();
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: Number(process.env.SMTP_PORT || 587),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
-  throw new Error(
-    `Email OTP could not be sent (${response.status}): ${errorBody}`
-  );
-}
+async function sendEmailOtp(to, otp) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    throw new Error("Gmail SMTP is not configured.");
+  }
+
+  await transporter.sendMail({
+    from: `"MARG" <${process.env.SMTP_USER}>`,
+    to,
+    subject: "Your MARG verification code",
+    html: `
+      <h2>Your MARG verification code</h2>
+      <p>Your verification code is:</p>
+      <h1>${otp}</h1>
+      <p>This code expires in 5 minutes.</p>
+      <p>Do not share this code with anyone.</p>
+    `,
+  });
 }
 
 async function sendSmsOtp(to, otp) {
