@@ -1,5 +1,4 @@
 import crypto from "node:crypto";
-import nodemailer from "nodemailer";
 
 const OTP_TTL_MS = 5 * 60 * 1000;
 const RESEND_COOLDOWN_MS = 45 * 1000;
@@ -16,35 +15,45 @@ export function otpConfig() {
   return { emailEnabled: emailEnabled(), smsEnabled: smsEnabled() };
 }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: Number(process.env.SMTP_PORT || 587),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
 async function sendEmailOtp(to, otp) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    throw new Error("Gmail SMTP is not configured.");
+  if (!process.env.BREVO_API_KEY) {
+    throw new Error("Brevo API is not configured.");
   }
 
-  await transporter.sendMail({
-    from: `"MARG" <${process.env.SMTP_USER}>`,
-    to,
-    subject: "Your MARG verification code",
-    html: `
-      <h2>Your MARG verification code</h2>
-      <p>Your verification code is:</p>
-      <h1>${otp}</h1>
-      <p>This code expires in 5 minutes.</p>
-      <p>Do not share this code with anyone.</p>
-    `,
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "api-key": process.env.BREVO_API_KEY,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: {
+        name: "MARG Travel",
+        email: process.env.OTP_FROM_EMAIL,
+      },
+      to: [
+        {
+          email: to,
+        },
+      ],
+      subject: "Your MARG verification code",
+      htmlContent: `
+        <h2>MARG Travel</h2>
+        <p>Your verification code is:</p>
+        <h1>${otp}</h1>
+        <p>This code expires in 5 minutes.</p>
+        <p>Do not share this code with anyone.</p>
+      `,
+    }),
   });
-}
 
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Brevo API error:", response.status, errorText);
+    throw new Error("Brevo failed to send the OTP email.");
+  }
+}
 async function sendSmsOtp(to, otp) {
   if (!smsEnabled()) throw new Error("SMS OTP is not configured. Add Twilio credentials in the backend environment.");
   const body = new URLSearchParams({ To: to, From: process.env.TWILIO_FROM_NUMBER, Body: `MARG verification code: ${otp}. It expires in 5 minutes. Do not share it.` });
