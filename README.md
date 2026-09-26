@@ -1,167 +1,202 @@
-# MARG — Dual Login Full-Stack Starter
+# MARG — Smart, Safe & Community-Driven Travel Platform
 
-This version implements the requested two-role structure based on the supplied MARG PDF.
+> **MARG** is a full-stack travel platform designed to connect travellers with local tourism services while enabling more personalized, affordable, safer and responsible travel experiences.
 
-## Source requirements represented
-The PDF describes MARG as a bridge between travellers and tourism services; services include smart hotel/transport booking, smart route/destination suggestions, AI-based trip planning, Emergency SOS support and companion traveller details. It also lists AI with budget intelligence, crowd-aware tourism, multilingual support, local community focus and a complete travel ecosystem. The vision/mission focus on smarter, safer, sustainable and personalized travel, connecting travellers with local communities and responsible tourism. The technical approach names HTML5/CSS/JavaScript, AI trip planning, maps/routing APIs, hotel/transport booking APIs, and Node.js/Python with Firebase/PostgreSQL. See the supplied PDF, pages 2–8.
+---
 
-## Two login systems
-### Traveller
-- `traveller-login.html`
-- `traveller-register.html`
-- `traveller-dashboard.html`
+## 🏆 Hackathon Project
 
-After traveller login, the traveller dashboard contains:
-- AI-based trip planning
-- budget field
-- interests
-- crowd preference / less-crowded option
-- published local services
-- hotel / transport / experience booking starter
-- bookings
-- companion traveller details
-- SOS
-- responsible-travel concepts
+### Team EcoNova
 
-### Service Provider
-- `provider-login.html`
-- `provider-register.html`
-- `provider-dashboard.html`
+**Team Members**
+- Manu Raj Kaushik
+- Tannu Sharma
+- Smriti Kumari
 
-After Service Provider login, the Service Provider dashboard lets a Service Provider publish:
-- Hotel
-- Artisan
-- Food
-- Transport
-- Experience
-- Guide
+---
 
-Each listing has:
-- service name
-- category
-- destination
-- price
-- capacity
-- contact phone
-- description
-- published/draft status
+## 🌍 About MARG
 
-## Data flow
-Service Provider:
-`provider-register -> provider-login -> provider-dashboard -> POST /api/services -> PostgreSQL`
+Travel planning is often fragmented across multiple platforms. Travellers may need to search separately for accommodation, transport, activities, local experiences and destination information.
 
-Traveller:
-`traveller-register -> traveller-login -> traveller-dashboard -> GET /api/services`
+**MARG brings these elements together into one connected travel ecosystem.**
 
-Only `published=true` services are public, so when a service provider publishes a service it becomes available to the traveller marketplace.
+The platform connects:
 
-## Run locally
+**Travellers ↔ Local Service Providers ↔ Tourism Ecosystem**
 
-### Backend
-```bash
-cd backend
-cp .env.example .env
-npm install
-# Start PostgreSQL yourself or use the docker-compose from the earlier MARG backend package
-npx prisma generate
-npx prisma migrate dev
-npm run dev
-```
+MARG focuses on personalized travel planning, local community participation, safety-oriented features and responsible tourism.
 
-### Frontend
-From the frontend folder:
-```bash
-python -m http.server 8080
-```
-Open:
-`http://localhost:8080`
+---
 
-The frontend defaults to `http://localhost:4000`.
-To point it to Render:
-```js
-localStorage.setItem("marg_api","https://YOUR-RENDER-API.onrender.com")
-```
-Then reload.
+## 🎯 Problem Statement
 
-## Render
-The backend contains `render.yaml`.
-- Build: `npm install && npx prisma generate`
-- Pre-deploy: `npx prisma migrate deploy`
-- Start: `npm start`
-- PostgreSQL is provisioned and connected through `DATABASE_URL`
-- Set `CORS_ORIGIN` to the public frontend URL.
+Modern travellers face several challenges:
 
-## Important production notes
-This is a functional starter/prototype, not a finished production travel marketplace. Before accepting real bookings or presenting SOS as a live emergency-response service, add:
-- service provider verification/approval
-- payment gateway + signed webhooks
-- real hotel/transport inventory APIs
-- availability locking and cancellation/refund rules
-- real maps/routing API
-- AI service with server-side API keys
-- multilingual localization system
-- crowd/real-time tourism data provider
-- review moderation and user verification
-- notifications
-- emergency escalation/monitoring provider
-- rate limiting, WAF, audit logs
-- secure session/cookie architecture
-- privacy/consent/retention controls
-- database backups and monitoring
-- automated tests and CI/CD
+- Travel planning is scattered across multiple platforms.
+- Finding authentic local experiences can be difficult.
+- Budget management during trip planning can be inconvenient.
+- Popular destinations can become overcrowded.
+- Local businesses and service providers may have limited digital visibility.
+- Safety features are often separate from the travel-planning experience.
+- Travellers need better ways to discover community-oriented tourism options.
 
+---
 
-## Admin portal
+## 💡 Our Solution
 
-New pages:
-- `frontend/admin-login.html`
-- `frontend/admin-dashboard.html`
+MARG provides a unified platform where travellers can plan and manage their journeys while local tourism providers can digitally showcase their services.
 
-Admin dashboard sections:
-- Dashboard statistics
+### For Travellers
+
+- AI-assisted trip planning
+- Budget-based travel planning
+- Interest-based recommendations
+- Less-crowded destination preferences
+- Local experiences and services
+- Hotel, transport and activity discovery
+- Booking management
+- Companion traveller information
+- SOS / safety interface
+- Responsible-travel concepts
+
+### For Service Providers
+
+Local providers can create tourism listings such as:
+
+- 🏨 Hotels & Homestays
+- 🚗 Transport
+- 🍲 Local Food Experiences
+- 🎨 Artisan Experiences
+- 🧭 Local Guides
+- 🏔️ Tourism Experiences
+
+Published services can then become discoverable through the traveller marketplace.
+
+### For Administrators
+
+The platform includes an administrative layer for managing the tourism ecosystem:
+
 - Traveller management
-- Service Provider approval
-- Service/listing management
+- Service Provider management
+- Provider approval
+- Service/listing monitoring
 - Booking monitoring
-- SOS/safety center
-- Reviews & reports placeholder
-- Destinations
-- AI trip-planning integration status
-- Maps/tourism-data integration status
-- Analytics
-- Responsible tourism principles
+- SOS monitoring
+- Reviews and reports
+- Destination management
+- Platform analytics
+- AI / tourism-data integration status
 
-Admin APIs:
-- `GET /api/admin/stats`
-- `GET /api/admin/users?role=TRAVELER|VENDOR|ADMIN`
-- `POST /api/admin/providers/:id/approve`
-- `GET /api/admin/services`
-- `GET /api/admin/bookings`
-- `GET /api/admin/sos`
-- `POST /api/admin/sos/:id/resolve`
+---
 
-### Creating the first admin
+# ✨ Key Features
 
-There is intentionally no public admin registration route. After the first deployment, create a user through a controlled process and set its role in PostgreSQL:
+## 1. AI-Assisted Trip Planning
 
-```sql
-UPDATE "User"
-SET "role" = 'ADMIN'
-WHERE "email" = 'admin@example.com';
-```
+MARG is designed to help travellers build personalized travel plans using factors such as:
 
-Service Provider accounts are created with `VENDOR` role but are not allowed to publish services until an administrator approves them. The approval endpoint sets `providerApproved=true`.
+- Destination
+- Budget
+- Interests
+- Trip duration
+- Crowd preference
 
-For a real production deployment, use a controlled seed/operations workflow for the first administrator, add MFA, audit logs, rate limits and stronger session controls.
+The goal is to provide more personalized planning instead of generic travel recommendations.
 
-## OTP authentication
+---
 
-Traveller and Service Provider registration/login now use two-factor OTP verification: an email OTP and an SMS OTP when a phone number is available. Admin login remains password-based.
+## 2. Community-Driven Tourism
 
-### Email OTP
-Set `RESEND_API_KEY` and `OTP_FROM_EMAIL`. `OTP_FROM_EMAIL` must be a sender/domain allowed by your Resend account.
+MARG gives local tourism providers a digital platform to showcase their services directly to travellers.
 
-### SMS OTP
+The ecosystem brings together:
+
+**Food + Culture + Guides + Transport + Stays + Experiences**
+
+This helps travellers discover local experiences while giving local providers greater digital visibility.
+
+---
+
+## 3. Budget-Aware Travel
+
+Travellers can specify their available budget while planning their journey.
+
+MARG is designed to help travellers discover options that better fit their budget and preferences.
+
+---
+
+## 4. Crowd-Aware Tourism
+
+MARG incorporates the concept of discovering alternatives to heavily crowded destinations.
+
+This supports:
+
+- Better traveller experiences
+- Destination diversification
+- Local tourism development
+- More responsible tourism
+
+---
+
+## 5. Safety & SOS
+
+The platform includes an SOS/safety interface as part of the traveller experience.
+
+Administrators can also monitor SOS-related requests through the admin dashboard.
+
+> **Prototype note:** The current SOS feature demonstrates the product workflow. It should not be considered a live emergency-response service until connected to an appropriate emergency-response provider.
+
+---
+
+## 6. Service Provider Marketplace
+
+Service providers can publish tourism offerings containing:
+
+- Service name
+- Category
+- Destination
+- Price
+- Capacity
+- Contact information
+- Description
+- Publication status
+
+Only approved/published services are made available to travellers.
+
+---
+
+## 7. Admin Control Layer
+
+MARG includes a dedicated admin portal for platform management.
+
+Administrators can monitor:
+
+- Users
+- Service Providers
+- Services
+- Bookings
+- Safety requests
+- Platform statistics
+
+Service Providers can also go through an approval workflow before their services become publicly available.
+
+---
+
+# 🔐 Authentication & User Roles
+
+MARG separates the platform into three major roles.
+
+### Traveller
+
+```text
+Registration
+     ↓
+OTP Verification
+     ↓
+Traveller Login
+     ↓
+Traveller Dashboard
 Set `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_FROM_NUMBER`. Phone numbers should be entered in international/E.164 format when required by the SMS provider.
 
 ### Render environment variables
