@@ -1,6 +1,14 @@
-# MARG — Smart, Safe & Community-Driven Travel Platform
+# MARG — Smart, Safe & Sustainable Travel Platform
 
-> **MARG** is a full-stack travel platform designed to connect travellers with local tourism services while enabling more personalized, affordable, safer and responsible travel experiences.
+A full-stack travel ecosystem connecting travellers with local tourism
+service providers through personalized trip planning, service discovery,
+booking, safety features and responsible tourism.
+
+## Live Demo
+https://marg-travel-platform.onrender.com
+
+## Source Code
+https://github.com/MR-Kaushik01/MARG-Travel-Platform
 
 ---
 
